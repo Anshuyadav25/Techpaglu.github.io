@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PractiCe for PG/INICET</title>
+    <title>Techpaglu - Pathology</title>
+    <script>
+        const storedUser = localStorage.getItem('techpagluUser');
+        if (!storedUser) {
+            window.location.href = 'login.html';
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -113,6 +120,47 @@
             gap: 24px;
         }
 
+        .welcome-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: #f4f6ff;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .welcome-text {
+            font-weight: 600;
+            color: #4d4d4d;
+        }
+
+        .logout-button {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #3a3a3a;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .logout-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(102, 126, 234, 0.25);
+        }
+
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+        }
+
         .portal-card {
             background: #ffffff;
             border-radius: 18px;
@@ -127,6 +175,14 @@
             color: #3a3a3a;
             margin-bottom: 8px;
             font-weight: 700;
+        }
+
+        .portal-subtitle {
+            font-size: 0.95em;
+            color: #777;
+            margin-bottom: 18px;
+        }
+
         }
 
         .portal-subtitle {
@@ -223,12 +279,39 @@
                 animation: none;
             }
         }
+
+        .portal-button:hover,
+        .portal-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.45);
+        }
+
+        .portal-link {
+            background: #f4f6ff;
+            color: #4d4d4d;
+            box-shadow: none;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .portal-link:hover {
+            color: #2f2f2f;
+        }
+
+        .portal-link span {
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>PractiCe for PG/INICET</h1>
         <p class="subtitle">Your one-stop portal for MBBS prep resources.</p>
+        <h1>🚀 Techpaglu</h1>
+        <p class="subtitle">Your one-stop portal for MBBS prep resources.</p>
+        <div class="welcome-row">
+            <div class="welcome-text" id="welcomeText">Welcome back!</div>
+            <button class="logout-button" type="button" id="logoutButton">Log out</button>
+        </div>
         <div class="portal-grid">
             <section class="portal-card">
                 <h2 class="portal-title">Prepladder</h2>
@@ -243,6 +326,15 @@
                         <span>→</span>
                     </a>
                     <a class="portal-link" href="prepx_Pharmacology.html" data-qbank-title="Prex Pharmacology">
+                    <a class="portal-link" href="prepx_Microbiology.html">
+                        <span>Prex Microbiology</span>
+                        <span>→</span>
+                    </a>
+                    <a class="portal-link" href="prepx_Pathology.html">
+                        <span>Prex Pathology</span>
+                        <span>→</span>
+                    </a>
+                    <a class="portal-link" href="prepx_Pharmacology.html">
                         <span>Prex Pharmacology</span>
                         <span>→</span>
                     </a>
@@ -262,6 +354,9 @@
                             <span>→</span>
                         </a>
                     </div>
+                    <a class="portal-button" href="MBBS Professional Exams (1st - 3rd Year) Q-Bank.html">
+                        MBBS Professional Exams Q-Bank →
+                    </a>
                 </div>
             </section>
         </div>
@@ -304,6 +399,22 @@
         });
 
         updateLastVisited();
+        const welcomeText = document.getElementById('welcomeText');
+        const logoutButton = document.getElementById('logoutButton');
+        const username = localStorage.getItem('techpagluUser');
+
+        if (username && welcomeText) {
+            welcomeText.textContent = `Welcome back, ${username}!`;
+        }
+
+        if (logoutButton) {
+            logoutButton.addEventListener('click', () => {
+                localStorage.removeItem('techpagluUser');
+                window.location.href = 'login.html';
+            });
+        }
+
+        localStorage.setItem('techpagluLastVisited', 'index.html');
     </script>
 </body>
 </html>
