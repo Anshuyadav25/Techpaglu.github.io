@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PractiCe for PG/INICET</title>
     <title>Techpaglu - Pathology</title>
     <script>
         const storedUser = localStorage.getItem('techpagluUser');
@@ -21,14 +20,13 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
-            background-size: 200% 200%;
-            animation: gradientShift 30s ease infinite;
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
-            will-change: background-position;
+            overflow: hidden;
         }
 
         @keyframes gradientShift {
@@ -41,26 +39,26 @@
         body::before {
             content: '';
             position: fixed;
-            width: 320px;
-            height: 320px;
+            width: 400px;
+            height: 400px;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             border-radius: 50%;
             top: -100px;
             left: -100px;
-            animation: float 28s infinite ease-in-out;
+            animation: float 20s infinite ease-in-out;
             z-index: 1;
         }
 
         body::after {
             content: '';
             position: fixed;
-            width: 240px;
-            height: 240px;
+            width: 300px;
+            height: 300px;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             border-radius: 50%;
             bottom: -50px;
             right: -50px;
-            animation: float 32s infinite ease-in-out reverse;
+            animation: float 25s infinite ease-in-out reverse;
             z-index: 1;
         }
 
@@ -112,12 +110,6 @@
             font-size: 1.1em;
             margin-bottom: 35px;
             font-weight: 300;
-        }
-
-        .portal-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 24px;
         }
 
         .welcome-row {
@@ -175,14 +167,6 @@
             color: #3a3a3a;
             margin-bottom: 8px;
             font-weight: 700;
-        }
-
-        .portal-subtitle {
-            font-size: 0.95em;
-            color: #777;
-            margin-bottom: 18px;
-        }
-
         }
 
         .portal-subtitle {
@@ -256,56 +240,10 @@
         .portal-link span {
             font-weight: 600;
         }
-
-        .last-visited {
-            margin-top: 14px;
-            padding-top: 14px;
-            border-top: 1px dashed rgba(102, 126, 234, 0.25);
-        }
-
-        .last-visited p {
-            font-size: 0.9em;
-            color: #6d6d6d;
-            margin-bottom: 10px;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            body {
-                animation: none;
-            }
-
-            body::before,
-            body::after {
-                animation: none;
-            }
-        }
-
-        .portal-button:hover,
-        .portal-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.45);
-        }
-
-        .portal-link {
-            background: #f4f6ff;
-            color: #4d4d4d;
-            box-shadow: none;
-            border: 1px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .portal-link:hover {
-            color: #2f2f2f;
-        }
-
-        .portal-link span {
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>PractiCe for PG/INICET</h1>
-        <p class="subtitle">Your one-stop portal for MBBS prep resources.</p>
         <h1>🚀 Techpaglu</h1>
         <p class="subtitle">Your one-stop portal for MBBS prep resources.</p>
         <div class="welcome-row">
@@ -317,15 +255,6 @@
                 <h2 class="portal-title">Prepladder</h2>
                 <p class="portal-subtitle">2nd Year Essentials</p>
                 <div class="portal-links">
-                    <a class="portal-link" href="prepx_Microbiology.html" data-qbank-title="Prex Microbiology">
-                        <span>Prex Microbiology</span>
-                        <span>→</span>
-                    </a>
-                    <a class="portal-link" href="prepx_Pathology.html" data-qbank-title="Prex Pathology">
-                        <span>Prex Pathology</span>
-                        <span>→</span>
-                    </a>
-                    <a class="portal-link" href="prepx_Pharmacology.html" data-qbank-title="Prex Pharmacology">
                     <a class="portal-link" href="prepx_Microbiology.html">
                         <span>Prex Microbiology</span>
                         <span>→</span>
@@ -344,16 +273,6 @@
                 <h2 class="portal-title">Doctut</h2>
                 <p class="portal-subtitle">MBBS Professional Exams</p>
                 <div class="portal-links">
-                    <a class="portal-button" href="MBBS Professional Exams (1st - 3rd Year) Q-Bank.html" data-qbank-title="MBBS Professional Exams Q-Bank">
-                        MBBS Professional Exams Q-Bank →
-                    </a>
-                    <div class="last-visited" id="last-visited" hidden>
-                        <p>Last visited Q-Bank</p>
-                        <a class="portal-link" id="last-visited-link" href="#">
-                            <span id="last-visited-title">Continue</span>
-                            <span>→</span>
-                        </a>
-                    </div>
                     <a class="portal-button" href="MBBS Professional Exams (1st - 3rd Year) Q-Bank.html">
                         MBBS Professional Exams Q-Bank →
                     </a>
@@ -362,43 +281,6 @@
         </div>
     </div>
     <script>
-        const qbankLinks = document.querySelectorAll('[data-qbank-title]');
-        const lastVisitedContainer = document.getElementById('last-visited');
-        const lastVisitedLink = document.getElementById('last-visited-link');
-        const lastVisitedTitle = document.getElementById('last-visited-title');
-        const storageKey = 'techpaglu:lastVisitedQBank';
-
-        const updateLastVisited = () => {
-            const stored = localStorage.getItem(storageKey);
-            if (!stored) {
-                lastVisitedContainer.hidden = true;
-                return;
-            }
-            try {
-                const { href, title } = JSON.parse(stored);
-                if (!href || !title) {
-                    lastVisitedContainer.hidden = true;
-                    return;
-                }
-                lastVisitedLink.href = href;
-                lastVisitedTitle.textContent = title;
-                lastVisitedContainer.hidden = false;
-            } catch (error) {
-                lastVisitedContainer.hidden = true;
-            }
-        };
-
-        qbankLinks.forEach((link) => {
-            link.addEventListener('click', () => {
-                const payload = {
-                    href: link.getAttribute('href'),
-                    title: link.dataset.qbankTitle || link.textContent.trim(),
-                };
-                localStorage.setItem(storageKey, JSON.stringify(payload));
-            });
-        });
-
-        updateLastVisited();
         const welcomeText = document.getElementById('welcomeText');
         const logoutButton = document.getElementById('logoutButton');
         const username = localStorage.getItem('techpagluUser');
