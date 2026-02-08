@@ -130,6 +130,69 @@
             color: #4d4d4d;
         }
 
+        .search-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 18px;
+            border-radius: 16px;
+            background: #ffffff;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .search-panel h2 {
+            font-size: 1.2em;
+            color: #3a3a3a;
+        }
+
+        .search-input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .search-input {
+            flex: 1 1 240px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            font-size: 1em;
+        }
+
+        .search-status {
+            font-size: 0.95em;
+            color: #666;
+        }
+
+        .search-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+        }
+
+        .search-result {
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #f4f6ff;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .search-result a {
+            font-weight: 700;
+            color: #4d4d4d;
+            text-decoration: none;
+        }
+
+        .search-result span {
+            font-size: 0.9em;
+            color: #666;
+        }
+
         .logout-button {
             border: none;
             padding: 10px 16px;
@@ -250,6 +313,14 @@
             <div class="welcome-text" id="welcomeText">Welcome back!</div>
             <button class="logout-button" type="button" id="logoutButton">Log out</button>
         </div>
+        <section class="search-panel" aria-label="Question bank search">
+            <h2>Search question banks</h2>
+            <div class="search-input-row">
+                <input class="search-input" id="searchInput" type="search" placeholder="Search across Microbiology, Pathology, Pharmacology, and MBBS Q-Bank..." autocomplete="off">
+            </div>
+            <div class="search-status" id="searchStatus">Start typing to see matching question banks.</div>
+            <div class="search-results" id="searchResults"></div>
+        </section>
         <div class="portal-grid">
             <section class="portal-card">
                 <h2 class="portal-title">Prepladder</h2>
@@ -284,6 +355,22 @@
         const welcomeText = document.getElementById('welcomeText');
         const logoutButton = document.getElementById('logoutButton');
         const username = localStorage.getItem('techpagluUser');
+        const searchInput = document.getElementById('searchInput');
+        const searchStatus = document.getElementById('searchStatus');
+        const searchResults = document.getElementById('searchResults');
+        const searchSources = [
+            { label: 'Microbiology', page: 'prepx_Microbiology.html' },
+            { label: 'Pathology', page: 'prepx_Pathology.html' },
+            { label: 'Pharmacology', page: 'prepx_Pharmacology.html' }
+        ];
+        const staticEntries = [
+            {
+                title: 'MBBS Professional Exams Q-Bank',
+                branch: 'MBBS Professional Exams',
+                page: 'MBBS Professional Exams (1st - 3rd Year) Q-Bank.html'
+            }
+        ];
+        let questionBanks = [];
 
         if (username && welcomeText) {
             welcomeText.textContent = `Welcome back, ${username}!`;
@@ -293,6 +380,99 @@
             logoutButton.addEventListener('click', () => {
                 localStorage.removeItem('techpagluUser');
                 window.location.href = 'login.html';
+            });
+        }
+
+        const normalizeText = (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+        const isApproxMatch = (needle, haystack) => {
+            if (!needle) return true;
+            if (haystack.includes(needle)) return true;
+            let index = 0;
+            for (const char of needle) {
+                index = haystack.indexOf(char, index);
+                if (index === -1) return false;
+                index += 1;
+            }
+            return true;
+        };
+
+        const renderResults = (matches, query) => {
+            if (!searchResults) return;
+            searchResults.innerHTML = '';
+            if (!query) {
+                searchStatus.textContent = 'Start typing to see matching question banks.';
+                return;
+            }
+            if (!matches.length) {
+                searchStatus.textContent = `No matches found for "${query}".`;
+                return;
+            }
+            searchStatus.textContent = `Showing ${matches.length} match${matches.length > 1 ? 'es' : ''}.`;
+            matches.forEach((bank) => {
+                const card = document.createElement('div');
+                card.className = 'search-result';
+                const link = document.createElement('a');
+                link.href = bank.testId ? `${bank.page}?test=${encodeURIComponent(bank.testId)}` : bank.page;
+                link.textContent = bank.title;
+                const meta = document.createElement('span');
+                meta.textContent = bank.branch;
+                card.append(link, meta);
+                searchResults.appendChild(card);
+            });
+        };
+
+        const handleSearch = (value) => {
+            const query = normalizeText(value);
+            if (!query) {
+                renderResults([], '');
+                return;
+            }
+            const matches = questionBanks.filter((bank) => isApproxMatch(query, bank.searchText));
+            renderResults(matches.slice(0, 30), value.trim());
+        };
+
+        const loadQuestionBanks = async () => {
+            const banks = [...staticEntries];
+            await Promise.all(
+                searchSources.map(async (source) => {
+                    try {
+                        const response = await fetch(source.page);
+                        if (!response.ok) return;
+                        const html = await response.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        doc.querySelectorAll('.nav-buttons button').forEach((button) => {
+                            const title = button.textContent.trim();
+                            const onclick = button.getAttribute('onclick') || '';
+                            const match = onclick.match(/showTest\\('([^']+)'\\)/);
+                            const testId = match ? match[1] : null;
+                            if (title && testId) {
+                                banks.push({
+                                    title,
+                                    branch: source.label,
+                                    page: source.page,
+                                    testId
+                                });
+                            }
+                        });
+                    } catch (error) {
+                        console.warn('Failed to load search data for', source.page, error);
+                    }
+                })
+            );
+            questionBanks = banks.map((bank) => ({
+                ...bank,
+                searchText: normalizeText(`${bank.title} ${bank.branch}`)
+            }));
+        };
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (event) => handleSearch(event.target.value));
+            loadQuestionBanks().then(() => {
+                if (searchInput.value) {
+                    handleSearch(searchInput.value);
+                }
             });
         }
 
