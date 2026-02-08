@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Techpaglu - Pathology</title>
+    <title>PractiCe for PG/INICET</title>
     <style>
         * {
             margin: 0;
@@ -14,13 +14,14 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            background-size: 200% 200%;
+            animation: gradientShift 30s ease infinite;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            overflow-x: hidden;
+            will-change: background-position;
         }
 
         @keyframes gradientShift {
@@ -33,26 +34,26 @@
         body::before {
             content: '';
             position: fixed;
-            width: 400px;
-            height: 400px;
+            width: 320px;
+            height: 320px;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             border-radius: 50%;
             top: -100px;
             left: -100px;
-            animation: float 20s infinite ease-in-out;
+            animation: float 28s infinite ease-in-out;
             z-index: 1;
         }
 
         body::after {
             content: '';
             position: fixed;
-            width: 300px;
-            height: 300px;
+            width: 240px;
+            height: 240px;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             border-radius: 50%;
             bottom: -50px;
             right: -50px;
-            animation: float 25s infinite ease-in-out reverse;
+            animation: float 32s infinite ease-in-out reverse;
             z-index: 1;
         }
 
@@ -102,38 +103,64 @@
             text-align: center;
             color: #666;
             font-size: 1.1em;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             font-weight: 300;
         }
 
-        .content {
-            text-align: center;
-            margin: 30px 0;
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
         }
 
-        .content p {
-            color: #555;
-            font-size: 1.1em;
-            margin-bottom: 30px;
-            line-height: 1.6;
+        .portal-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            text-align: left;
+            border: 1px solid rgba(102, 126, 234, 0.15);
         }
 
-        a {
-            display: inline-block;
-            padding: 15px 40px;
+        .portal-title {
+            font-size: 1.4em;
+            color: #3a3a3a;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .portal-subtitle {
+            font-size: 0.95em;
+            color: #777;
+            margin-bottom: 18px;
+        }
+
+        .portal-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .portal-button,
+        .portal-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             text-decoration: none;
-            border-radius: 50px;
-            font-size: 1.1em;
+            border-radius: 14px;
+            font-size: 1em;
             font-weight: 600;
             transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.35);
             position: relative;
             overflow: hidden;
         }
 
-        a::before {
+        .portal-button::before,
+        .portal-link::before {
             content: '';
             position: absolute;
             top: 50%;
@@ -141,35 +168,142 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.25);
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
             z-index: -1;
         }
 
-        a:hover::before {
-            width: 300px;
-            height: 300px;
+        .portal-button:hover::before,
+        .portal-link:hover::before {
+            width: 260px;
+            height: 260px;
         }
 
-        a:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        .portal-button:hover,
+        .portal-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.45);
         }
 
-        a:active {
-            transform: translateY(-1px);
+        .portal-link {
+            background: #f4f6ff;
+            color: #4d4d4d;
+            box-shadow: none;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .portal-link:hover {
+            color: #2f2f2f;
+        }
+
+        .portal-link span {
+            font-weight: 600;
+        }
+
+        .last-visited {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px dashed rgba(102, 126, 234, 0.25);
+        }
+
+        .last-visited p {
+            font-size: 0.9em;
+            color: #6d6d6d;
+            margin-bottom: 10px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            body {
+                animation: none;
+            }
+
+            body::before,
+            body::after {
+                animation: none;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Techpaglu</h1>
-        <p class="subtitle">Master Pathology with Excellence</p>
-        <div class="content">
-            <p>Explore our comprehensive pathology resources and unlock your learning potential.</p>
-            <a href="prepx_Pathology.html">View Pathology Materials →</a>
+        <h1>PractiCe for PG/INICET</h1>
+        <p class="subtitle">Your one-stop portal for MBBS prep resources.</p>
+        <div class="portal-grid">
+            <section class="portal-card">
+                <h2 class="portal-title">Prepladder</h2>
+                <p class="portal-subtitle">2nd Year Essentials</p>
+                <div class="portal-links">
+                    <a class="portal-link" href="prepx_Microbiology.html" data-qbank-title="Prex Microbiology">
+                        <span>Prex Microbiology</span>
+                        <span>→</span>
+                    </a>
+                    <a class="portal-link" href="prepx_Pathology.html" data-qbank-title="Prex Pathology">
+                        <span>Prex Pathology</span>
+                        <span>→</span>
+                    </a>
+                    <a class="portal-link" href="prepx_Pharmacology.html" data-qbank-title="Prex Pharmacology">
+                        <span>Prex Pharmacology</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </section>
+            <section class="portal-card">
+                <h2 class="portal-title">Doctut</h2>
+                <p class="portal-subtitle">MBBS Professional Exams</p>
+                <div class="portal-links">
+                    <a class="portal-button" href="MBBS Professional Exams (1st - 3rd Year) Q-Bank.html" data-qbank-title="MBBS Professional Exams Q-Bank">
+                        MBBS Professional Exams Q-Bank →
+                    </a>
+                    <div class="last-visited" id="last-visited" hidden>
+                        <p>Last visited Q-Bank</p>
+                        <a class="portal-link" id="last-visited-link" href="#">
+                            <span id="last-visited-title">Continue</span>
+                            <span>→</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
+    <script>
+        const qbankLinks = document.querySelectorAll('[data-qbank-title]');
+        const lastVisitedContainer = document.getElementById('last-visited');
+        const lastVisitedLink = document.getElementById('last-visited-link');
+        const lastVisitedTitle = document.getElementById('last-visited-title');
+        const storageKey = 'techpaglu:lastVisitedQBank';
+
+        const updateLastVisited = () => {
+            const stored = localStorage.getItem(storageKey);
+            if (!stored) {
+                lastVisitedContainer.hidden = true;
+                return;
+            }
+            try {
+                const { href, title } = JSON.parse(stored);
+                if (!href || !title) {
+                    lastVisitedContainer.hidden = true;
+                    return;
+                }
+                lastVisitedLink.href = href;
+                lastVisitedTitle.textContent = title;
+                lastVisitedContainer.hidden = false;
+            } catch (error) {
+                lastVisitedContainer.hidden = true;
+            }
+        };
+
+        qbankLinks.forEach((link) => {
+            link.addEventListener('click', () => {
+                const payload = {
+                    href: link.getAttribute('href'),
+                    title: link.dataset.qbankTitle || link.textContent.trim(),
+                };
+                localStorage.setItem(storageKey, JSON.stringify(payload));
+            });
+        });
+
+        updateLastVisited();
+    </script>
 </body>
 </html>
