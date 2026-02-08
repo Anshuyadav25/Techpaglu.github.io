@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Techpaglu - Pathology</title>
+    <script>
+        const storedUser = localStorage.getItem('techpagluUser');
+        if (!storedUser) {
+            window.location.href = 'login.html';
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -106,6 +112,41 @@
             font-weight: 300;
         }
 
+        .welcome-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: #f4f6ff;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .welcome-text {
+            font-weight: 600;
+            color: #4d4d4d;
+        }
+
+        .logout-button {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #3a3a3a;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .logout-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(102, 126, 234, 0.25);
+        }
+
         .portal-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -205,6 +246,10 @@
     <div class="container">
         <h1>🚀 Techpaglu</h1>
         <p class="subtitle">Your one-stop portal for MBBS prep resources.</p>
+        <div class="welcome-row">
+            <div class="welcome-text" id="welcomeText">Welcome back!</div>
+            <button class="logout-button" type="button" id="logoutButton">Log out</button>
+        </div>
         <div class="portal-grid">
             <section class="portal-card">
                 <h2 class="portal-title">Prepladder</h2>
@@ -235,5 +280,23 @@
             </section>
         </div>
     </div>
+    <script>
+        const welcomeText = document.getElementById('welcomeText');
+        const logoutButton = document.getElementById('logoutButton');
+        const username = localStorage.getItem('techpagluUser');
+
+        if (username && welcomeText) {
+            welcomeText.textContent = `Welcome back, ${username}!`;
+        }
+
+        if (logoutButton) {
+            logoutButton.addEventListener('click', () => {
+                localStorage.removeItem('techpagluUser');
+                window.location.href = 'login.html';
+            });
+        }
+
+        localStorage.setItem('techpagluLastVisited', 'index.html');
+    </script>
 </body>
 </html>
