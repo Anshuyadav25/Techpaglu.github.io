@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techpaglu Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .login-card {
+            width: min(420px, 100%);
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 20px;
+            padding: 36px 32px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #3a3a3a;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #d0d7ff;
+            font-size: 1rem;
+            margin-bottom: 18px;
+        }
+
+        .login-button {
+            width: 100%;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .helper-text {
+            margin-top: 16px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .error {
+            display: none;
+            color: #c0392b;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1>Welcome to Techpaglu</h1>
+        <p class="subtitle">Log in to continue where you left off.</p>
+        <p class="error" id="errorMessage">Please enter your name to continue.</p>
+        <form id="loginForm">
+            <label for="username">Your name</label>
+            <input type="text" id="username" name="username" placeholder="e.g., Dr. Ananya" required>
+            <button type="submit" class="login-button">Continue</button>
+        </form>
+        <p class="helper-text">We save your last visited page on this device.</p>
+    </div>
+    <script>
+        const existingUser = localStorage.getItem('techpagluUser');
+        if (existingUser) {
+            const lastVisited = localStorage.getItem('techpagluLastVisited') || 'index.html';
+            window.location.href = lastVisited;
+        }
+
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+
+        loginForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+
+            if (!username) {
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            errorMessage.style.display = 'none';
+            localStorage.setItem('techpagluUser', username);
+            const lastVisited = localStorage.getItem('techpagluLastVisited') || 'index.html';
+            window.location.href = lastVisited;
+        });
+    </script>
+</body>
+</html>
