@@ -16,23 +16,160 @@
     button:hover { background: #ddd; }
     .iframe-container { margin-top: 20px; }
     .iframe-container iframe { display: block; }
+    .chapter-browser, .topic-browser {
+      margin: 20px 0;
+      padding: 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    .chapter-grid, .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .chapter-btn, .topic-btn, .back-btn {
+      width: 100%;
+      text-align: left;
+      background: #fff;
+    }
+    .back-btn {
+      width: auto;
+      margin-bottom: 10px;
+    }
+
   </style>
-  <script>
+    <script>
     function showTest(id) {
-      if (document.querySelector('.iframe-container:not([style*="display: none"])') !== document.getElementById(id)) {
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      const current = document.querySelector('.iframe-container.active-test');
+      if (current && current !== target) {
         if (!confirm("Are you sure you want to switch tests? Any unsaved progress may be lost.")) {
           return;
         }
       }
-      document.querySelectorAll('.iframe-container').forEach(div => div.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
-      window.scrollTo(0, 0);
+
+      document.querySelectorAll('.iframe-container').forEach(div => {
+        div.style.display = 'none';
+        div.classList.remove('active-test');
+      });
+
+      target.style.display = 'block';
+      target.classList.add('active-test');
+
+      const chapterBrowser = document.getElementById('chapter-browser');
+      if (chapterBrowser) {
+        chapterBrowser.style.display = 'none';
+      }
+      const topicBrowser = document.getElementById('topic-browser');
+      if (topicBrowser) {
+        topicBrowser.style.display = 'none';
+      }
+      const backToTopics = document.getElementById('back-to-topics');
+      if (backToTopics) {
+        backToTopics.style.display = 'inline-block';
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    function initializeChapterNavigation() {
+      const nav = document.querySelector('.nav-buttons');
+      if (!nav) return;
+
+      const chapterBrowser = document.getElementById('chapter-browser');
+      const topicBrowser = document.getElementById('topic-browser');
+      const topicTitle = document.getElementById('topic-title');
+      const topicList = document.getElementById('topic-list');
+
+      const buttons = Array.from(nav.querySelectorAll('button'));
+      const grouped = new Map();
+
+      buttons.forEach(button => {
+        const label = button.textContent.trim();
+        const splitAt = label.indexOf('-');
+        const chapter = splitAt >= 0 ? label.slice(0, splitAt).replace(/_/g, ' ').trim() : 'General';
+        const topic = splitAt >= 0 ? label.slice(splitAt + 1).replace(/_/g, ' ').trim() : label.replace(/_/g, ' ').trim();
+        const target = (button.getAttribute('onclick') || '').match(/'([^']+)'/);
+        if (!target) return;
+
+        if (!grouped.has(chapter)) grouped.set(chapter, []);
+        grouped.get(chapter).push({ id: target[1], topic });
+      });
+
+      const chapterNames = Array.from(grouped.keys()).sort((a, b) => a.localeCompare(b));
+
+      function showChapters() {
+        chapterBrowser.style.display = 'block';
+        topicBrowser.style.display = 'none';
+        document.getElementById('back-to-topics').style.display = 'none';
+        document.querySelectorAll('.iframe-container').forEach(div => {
+          div.style.display = 'none';
+          div.classList.remove('active-test');
+        });
+      }
+
+      function showTopics(chapter) {
+        topicTitle.textContent = chapter;
+        topicList.innerHTML = '';
+
+        grouped.get(chapter)
+          .sort((a, b) => a.topic.localeCompare(b.topic))
+          .forEach(item => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = item.topic;
+            btn.className = 'topic-btn';
+            btn.addEventListener('click', () => showTest(item.id));
+            topicList.appendChild(btn);
+          });
+
+        chapterBrowser.style.display = 'none';
+        topicBrowser.style.display = 'block';
+        document.getElementById('back-to-topics').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      chapterBrowser.innerHTML = '<h2>Select Chapter</h2>';
+      const chapterGrid = document.createElement('div');
+      chapterGrid.className = 'chapter-grid';
+
+      chapterNames.forEach(chapter => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = chapter;
+        btn.className = 'chapter-btn';
+        btn.addEventListener('click', () => showTopics(chapter));
+        chapterGrid.appendChild(btn);
+      });
+
+      chapterBrowser.appendChild(chapterGrid);
+
+      document.getElementById('back-to-chapters').addEventListener('click', showChapters);
+      document.getElementById('back-to-topics').addEventListener('click', () => {
+        const chapter = topicTitle.textContent;
+        if (chapter) showTopics(chapter);
+      });
+
+      showChapters();
+    }
+
+    document.addEventListener('DOMContentLoaded', initializeChapterNavigation);
   </script>
+
 </head>
 <body>
   <h1>Prepx_Radiology - Combined Tests</h1>
-  <div class="nav-buttons"><button onclick="showTest('test1')">Basics_of_Radiology-Basics_of_MRI_and_Interventional_Radiology</button>
+  <div id="chapter-browser" class="chapter-browser"></div>
+  <div id="topic-browser" class="topic-browser" style="display:none;">
+    <button id="back-to-chapters" class="back-btn">← Back to Chapters</button>
+    <h2 id="topic-title"></h2>
+    <div id="topic-list" class="topic-grid"></div>
+  </div>
+  <div class="nav-buttons" style="display:none;"><button onclick="showTest('test1')">Basics_of_Radiology-Basics_of_MRI_and_Interventional_Radiology</button>
 <button onclick="showTest('test2')">Basics_of_Radiology-Basics_of_Radiology</button>
 <button onclick="showTest('test3')">Basics_of_Radiology-Previous_Year_Questions</button>
 <button onclick="showTest('test4')">Basics_of_Radiology-Radiation_Exposure__Hazards__Protection_Guidelines__and_Contrast_Media</button>
@@ -63,6 +200,7 @@
 <button onclick="showTest('test29')">Thoracic_Radiology-Respiratory_Radiology</button>
 </div>
   <hr>
+  <button id="back-to-topics" class="back-btn" style="display:none;">← Back to Topic List</button>
   
 <div id="test1" class="iframe-container" style="display:block;">
     <h2>Basics_of_Radiology-Basics_of_MRI_and_Interventional_Radiology</h2>
