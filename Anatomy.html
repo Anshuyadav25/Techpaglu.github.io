@@ -210,13 +210,11 @@
             transform: rotate(90deg);
         }
         .sub-nav {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
+            display: none;
             background-color: var(--bg-color);
         }
         .nav-item.expanded > .sub-nav {
-            max-height: 2000px;
+            display: block;
         }
         .sub-nav .nav-link {
             padding-left: 48px;
@@ -670,6 +668,11 @@
         questionsContainerEl.innerHTML = html;
         setupQuestionInteractivity();
         updateProgress();
+
+        const contentArea = document.querySelector('.content-area');
+        if (contentArea) {
+            contentArea.scrollTop = 0;
+        }
     }
 
     function renderModule(categoryId, subjectId, moduleId) {
@@ -884,6 +887,8 @@
                     subjectItem.classList.toggle('expanded');
                     renderSubject(category.categoryId, subject.subjectId);
                 });
+
+                subjectItem.classList.add('expanded');
                 
                 subjectItem.appendChild(subjectLink);
                 subjectItem.appendChild(moduleNav);
@@ -895,6 +900,8 @@
                 categoryItem.classList.toggle('expanded');
             });
             
+            categoryItem.classList.add('expanded');
+
             categoryItem.appendChild(categoryLink);
             categoryItem.appendChild(subNav);
             navListEl.appendChild(categoryItem);
