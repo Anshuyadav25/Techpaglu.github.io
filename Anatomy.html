@@ -58,7 +58,7 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
+            min-height: 100%;
             background-color: var(--bg-color);
             color: var(--on-surface-color);
             font-family: var(--font-family);
@@ -95,8 +95,9 @@
         }
         .content-area {
             flex-grow: 1;
-            padding: 24px;
+            padding: 24px 24px 120px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* --- Header --- */
@@ -916,7 +917,43 @@
         });
     }
 
+    function normalizeCourseData(courseData) {
+        if (!courseData || !Array.isArray(courseData.categories)) {
+            return courseData;
+        }
+
+        courseData.categories = courseData.categories.map((category) => {
+            const normalizedCategory = { ...category };
+            normalizedCategory.subjects = Array.isArray(category.subjects)
+                ? category.subjects
+                : (category.subjects ? [category.subjects] : []);
+
+            normalizedCategory.subjects = normalizedCategory.subjects.map((subject) => {
+                const normalizedSubject = { ...subject };
+                normalizedSubject.modules = Array.isArray(subject.modules)
+                    ? subject.modules
+                    : (subject.modules ? [subject.modules] : []);
+
+                normalizedSubject.modules = normalizedSubject.modules.map((module) => {
+                    const normalizedModule = { ...module };
+                    normalizedModule.questions = Array.isArray(module.questions)
+                        ? module.questions
+                        : (module.questions ? [module.questions] : []);
+                    return normalizedModule;
+                });
+
+                return normalizedSubject;
+            });
+
+            return normalizedCategory;
+        });
+
+        return courseData;
+    }
+
     function init() {
+        normalizeCourseData(COURSE_DATA);
+
         if (!COURSE_DATA || !COURSE_DATA.categories) {
             questionsContainerEl.innerHTML = '<p>Error: Could not load course data.</p>';
             return;
