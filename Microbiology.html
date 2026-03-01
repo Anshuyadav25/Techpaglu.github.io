@@ -448,14 +448,21 @@
                 text-align: center;
             }
             .nav-list {
-                display: block;
-                padding: 0;
-                max-height: calc(100vh - 120px);
-                overflow-y: auto;
+                display: flex;
+                padding: 8px 16px;
+                overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
             }
+            .nav-list::-webkit-scrollbar { display: none; }
             .nav-list li {
-                border-radius: 0;
+                flex-shrink: 0;
+                padding: 8px 16px;
+                margin-right: 8px;
+                border-radius: 16px;
+                border: 1px solid var(--border-color);
+                font-size: 0.9em;
+                white-space: nowrap;
             }
             .nav-list li.active {
                 border-color: var(--primary-color);
