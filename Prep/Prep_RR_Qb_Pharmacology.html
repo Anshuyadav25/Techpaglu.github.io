@@ -18,6 +18,27 @@
     .iframe-container iframe { display: block; }
   </style>
   <script>
+    function clearStoredQuizProgress() {
+      Object.keys(localStorage)
+        .filter(key => key.startsWith('quiz_'))
+        .forEach(key => localStorage.removeItem(key));
+    }
+
+    function resetToChapterList() {
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+      document.querySelectorAll('.iframe-container').forEach((div, index) => {
+        div.style.display = index === 0 ? 'block' : 'none';
+      });
+      window.scrollTo(0, 0);
+    }
+
+    function initializePageState() {
+      clearStoredQuizProgress();
+      resetToChapterList();
+    }
+
     function showTest(id) {
       if (document.querySelector('.iframe-container:not([style*="display: none"])') !== document.getElementById(id)) {
         if (!confirm("Are you sure you want to switch tests? Any unsaved progress may be lost.")) {
@@ -28,6 +49,8 @@
       document.getElementById(id).style.display = 'block';
       window.scrollTo(0, 0);
     }
+
+    window.addEventListener('DOMContentLoaded', initializePageState);
   </script>
 </head>
 <body>
