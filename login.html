@@ -109,8 +109,37 @@
             <button type="submit" class="login-button">Continue</button>
         </form>
         <p class="helper-text">We save your last visited page on this device.</p>
+        <p class="helper-text" id="savedCount"></p>
     </div>
     <script>
+        function getStoredUsers() {
+            try {
+                return JSON.parse(localStorage.getItem('techpagluUsers')) || [];
+            } catch (error) {
+                console.warn('Unable to parse saved users. Resetting saved entries.', error);
+                return [];
+            }
+        }
+
+        function saveUserEntry(entry) {
+            const users = getStoredUsers();
+            users.push(entry);
+            localStorage.setItem('techpagluUsers', JSON.stringify(users));
+        }
+
+        function loadSavedFormData() {
+            const savedName = localStorage.getItem('techpagluUser');
+            if (savedName) {
+                document.getElementById('username').value = savedName;
+            }
+
+            const totalEntries = getStoredUsers().length;
+            const savedCount = document.getElementById('savedCount');
+            savedCount.textContent = totalEntries
+                ? `Saved logins on this device: ${totalEntries}`
+                : 'No saved logins yet on this device.';
+        }
+
         const existingUser = localStorage.getItem('techpagluUser');
         if (existingUser) {
             const lastVisited = localStorage.getItem('techpagluLastVisited') || 'index.html';
@@ -122,13 +151,18 @@
 
 
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
+        window.addEventListener('load', () => {
+            if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('service-worker.js').catch((error) => {
                     console.warn('Service worker registration failed:', error);
                 });
-            });
-        }
+            }
+
+            // Quick localStorage test for debugging.
+            localStorage.setItem('techpagluStorageTest', 'ok');
+            console.info('localStorage test value:', localStorage.getItem('techpagluStorageTest'));
+            loadSavedFormData();
+        });
 
         loginForm.addEventListener('submit', (event) => {
             event.preventDefault();
@@ -141,6 +175,10 @@
 
             errorMessage.style.display = 'none';
             localStorage.setItem('techpagluUser', username);
+            saveUserEntry({
+                name: username,
+                savedAt: new Date().toISOString()
+            });
             const lastVisited = localStorage.getItem('techpagluLastVisited') || 'index.html';
             window.location.href = lastVisited;
         });
