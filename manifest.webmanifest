@@ -1,0 +1,18 @@
+{
+  "name": "Techpaglu",
+  "short_name": "Techpaglu",
+  "description": "Your one-stop portal for MBBS prep resources.",
+  "start_url": "index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
