@@ -1,224 +1,536 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Personal Progress Tracker</title>
-  <style>
-    :root {
-      color-scheme: light;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f4f7fb;
-      color: #1d2939;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Techpaglu">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icons/icon.svg">
+    <title>Techpaglu - Pathology</title>
+    <script>
+        const storedUser = localStorage.getItem('techpagluUser');
+        if (!storedUser) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    * {
-      box-sizing: border-box;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 30px 0;
+        }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 32rem),
-        linear-gradient(135deg, #eef4ff 0%, #f8fafc 50%, #eefdf7 100%);
-    }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-    main {
-      width: min(100%, 760px);
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid rgba(148, 163, 184, 0.28);
-      border-radius: 24px;
-      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
-      padding: clamp(24px, 5vw, 48px);
-    }
+        /* Animated background blobs */
+        body::before {
+            content: '';
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+            animation: float 20s infinite ease-in-out;
+            z-index: 1;
+        }
 
-    h1 {
-      margin: 0 0 12px;
-      font-size: clamp(2rem, 5vw, 3rem);
-      line-height: 1.05;
-      letter-spacing: -0.04em;
-      color: #0f172a;
-    }
+        body::after {
+            content: '';
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -50px;
+            right: -50px;
+            animation: float 25s infinite ease-in-out reverse;
+            z-index: 1;
+        }
 
-    p {
-      margin: 0 0 28px;
-      color: #475467;
-      font-size: 1.05rem;
-      line-height: 1.6;
-    }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
 
-    label {
-      display: block;
-      margin-bottom: 10px;
-      color: #344054;
-      font-weight: 700;
-    }
+        .container {
+            max-width: 1000px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.8s ease-out;
+        }
 
-    textarea {
-      width: 100%;
-      min-height: 300px;
-      resize: vertical;
-      border: 1px solid #cbd5e1;
-      border-radius: 16px;
-      padding: 18px;
-      font: inherit;
-      line-height: 1.6;
-      color: #101828;
-      background: #ffffff;
-      outline: none;
-      transition: border-color 160ms ease, box-shadow 160ms ease;
-    }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    textarea:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
-    }
+        h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
 
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 18px;
-    }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 35px;
+            font-weight: 300;
+        }
 
-    button {
-      border: 0;
-      border-radius: 999px;
-      padding: 13px 22px;
-      font: inherit;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
-    }
+        .welcome-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: #f4f6ff;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
 
-    button:hover {
-      transform: translateY(-1px);
-    }
+        .welcome-text {
+            font-weight: 600;
+            color: #4d4d4d;
+        }
 
-    button:focus-visible {
-      outline: 4px solid rgba(37, 99, 235, 0.24);
-      outline-offset: 2px;
-    }
+        .logout-button {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #3a3a3a;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
 
-    #saveButton {
-      color: #ffffff;
-      background: #2563eb;
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
-    }
+        .logout-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(102, 126, 234, 0.25);
+        }
 
-    #saveButton:hover {
-      background: #1d4ed8;
-    }
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+        }
 
-    #loadButton {
-      color: #1d2939;
-      background: #e2e8f0;
-    }
+        .portal-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            text-align: left;
+            border: 1px solid rgba(102, 126, 234, 0.15);
+        }
 
-    #loadButton:hover {
-      background: #cbd5e1;
-    }
+        .portal-title {
+            font-size: 1.4em;
+            color: #3a3a3a;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
 
-    #status {
-      min-height: 28px;
-      margin-top: 18px;
-      color: #2563eb;
-      font-weight: 700;
-    }
+        .portal-subtitle {
+            font-size: 0.95em;
+            color: #777;
+            margin-bottom: 18px;
+        }
 
-    #status.error {
-      color: #dc2626;
-    }
+        .portal-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-    #status.success {
-      color: #15803d;
-    }
-  </style>
+        .portal-button,
+        .portal-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 14px;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-button::before,
+        .portal-link::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            z-index: -1;
+        }
+
+        .portal-button:hover::before,
+        .portal-link:hover::before {
+            width: 260px;
+            height: 260px;
+        }
+
+        .portal-button:hover,
+        .portal-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.45);
+        }
+
+        .portal-link {
+            background: #f4f6ff;
+            color: #4d4d4d;
+            box-shadow: none;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .portal-link:hover {
+            color: #2f2f2f;
+        }
+
+        .portal-link span {
+            font-weight: 600;
+        }
+
+        .portal-link[aria-disabled="true"] {
+            opacity: 0.65;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .year-block {
+            border: 1px solid rgba(102, 126, 234, 0.18);
+            border-radius: 12px;
+            padding: 12px;
+            background: #fbfbff;
+        }
+
+        .year-title {
+            font-size: 1em;
+            color: #3d3d3d;
+            margin-bottom: 8px;
+        }
+
+        .year-sections {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .year-section-label {
+            font-size: 0.83em;
+            font-weight: 700;
+            color: #6a6a6a;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-top: 4px;
+        }
+    </style>
 </head>
 <body>
-  <main>
-    <h1>Personal Progress Tracker</h1>
-    <p>Write your latest progress below, save it to Firestore, and load it back whenever you return to this page.</p>
+    <div class="container">
+        <h1>🚀 Techpaglu</h1>
+        <p class="subtitle">Your one-stop portal for MBBS prep resources.</p>
+        <div class="welcome-row">
+            <div class="welcome-text" id="welcomeText">Welcome back!</div>
+            <button class="logout-button" type="button" id="logoutButton">Log out</button>
+        </div>
+        <div class="portal-grid">
+            <section class="portal-card">
+                <h2 class="portal-title">Prepladder</h2>
+                <p class="portal-subtitle">Subjective Q-Banks by Year (Main + RR)</p>
+                <div class="portal-links">
+                    <div class="year-block">
+                        <h3 class="year-title">1st Year</h3>
+                        <div class="year-sections">
+                            <div class="year-section-label">Main</div>
+                            <a class="portal-link" href="Prep/prepx_Anatomy.html"><span>Anatomy (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Physiology.html"><span>Physiology (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Biochemistry.html"><span>Biochemistry (Main)</span><span>→</span></a>
+                            <div class="year-section-label">RR</div>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Anatomy.html"><span>Anatomy (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Physiology.html"><span>Physiology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Biochemistry.html"><span>Biochemistry (RR)</span><span>→</span></a>
+                        </div>
+                    </div>
 
-    <label for="progressText">Your progress</label>
-    <textarea id="progressText" placeholder="Type your personal progress here..."></textarea>
+                    <div class="year-block">
+                        <h3 class="year-title">2nd Year</h3>
+                        <div class="year-sections">
+                            <div class="year-section-label">Main</div>
+                            <a class="portal-link" href="Prep/prepx_Pathology.html"><span>Pathology (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Pharmacology.html"><span>Pharmacology (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Microbiology.html"><span>Microbiology (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Forensic_Medicine.html"><span>Forensic Medicine (Main)</span><span>→</span></a>
+                            <div class="year-section-label">RR</div>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Pathology.html"><span>Pathology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Pharmacology.html"><span>Pharmacology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Microbiology.html"><span>Microbiology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Forensic_Medicine.html"><span>Forensic Medicine (RR)</span><span>→</span></a>
+                        </div>
+                    </div>
 
-    <div class="actions">
-      <button id="saveButton" type="button">Save Progress</button>
-      <button id="loadButton" type="button">Load Progress</button>
+                    <div class="year-block">
+                        <h3 class="year-title">3rd Year</h3>
+                        <div class="year-sections">
+                            <div class="year-section-label">Main</div>
+                            <a class="portal-link" href="Prep/prepx_PSM.html"><span>PSM (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_ENT.html"><span>ENT (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Ophthalmology.html"><span>Ophthalmology (Main)</span><span>→</span></a>
+                            <div class="year-section-label">RR</div>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_PSM.html"><span>PSM (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_ENT.html"><span>ENT (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Ophthalmology.html"><span>Ophthalmology (RR)</span><span>→</span></a>
+                        </div>
+                    </div>
+
+                    <div class="year-block">
+                        <h3 class="year-title">4th Year</h3>
+                        <div class="year-sections">
+                            <div class="year-section-label">Main</div>
+                            <a class="portal-link" href="Prep/prepx_Medicine.html"><span>Medicine (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Surgery.html"><span>Surgery (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Gynaecology___Obstetrics.html"><span>Obs &amp; Gynae (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Pediatrics.html"><span>Pediatrics (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Orthopaedics.html"><span>Orthopaedics (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Psychiatry.html"><span>Psychiatry (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Dermatology.html"><span>Dermatology (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Radiology.html"><span>Radiology (Main)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/prepx_Anaesthesia.html"><span>Anaesthesia (Main)</span><span>→</span></a>
+                            <div class="year-section-label">RR</div>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Medicine.html"><span>Medicine (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Surgery.html"><span>Surgery (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Gynaecology___Obstetrics.html"><span>Obs &amp; Gynae (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Pediatrics.html"><span>Pediatrics (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Orthopaedics.html"><span>Orthopaedics (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Psychiatry.html"><span>Psychiatry (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Dermatology.html"><span>Dermatology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Radiology.html"><span>Radiology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="Prep/Prep_RR_Qb_Anaesthesia.html"><span>Anaesthesia (RR)</span><span>→</span></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="portal-card">
+                <h2 class="portal-title">PYQ</h2>
+                <p class="portal-subtitle">Previous Year Question Papers</p>
+                <div class="portal-links">
+                    <a class="portal-link" href="pyqs/previous papers neet_pg_papers.html"><span>NEET PG Previous Papers</span><span>→</span></a>
+                    <a class="portal-link" href="pyqs/previous papers inicet-aiims.html"><span>INI-CET/AIIMS Previous Papers</span><span>→</span></a>
+                    <a class="portal-link" href="pyqs/previous papers _fmge_papers.html"><span>FMGE Previous Papers</span><span>→</span></a>
+                    <a class="portal-link" href="pyqs/CEREB previous_year_tests.html"><span>Cerebellum Previous Year</span><span>→</span></a>
+                </div>
+            </section>
+            <section class="portal-card">
+                <h2 class="portal-title">Doctut</h2>
+                <p class="portal-subtitle">MBBS Professional Exams</p>
+                <div class="portal-links">
+                    <div class="year-block">
+                        <h3 class="year-title">NEET PG</h3>
+                        <div class="year-sections">
+                            <div class="year-section-label">1st Year</div>
+                            <a class="portal-link" href="Doctut/Anatomy.html"><span>Anatomy</span><span>→</span></a>
+                            <a class="portal-link" href="Doctut/Physiology.html"><span>Physiology</span><span>→</span></a>
+                            <a class="portal-link" href="Doctut/Biochemistry.html"><span>Biochemistry</span><span>→</span></a>
+                            <div class="year-section-label">2nd Year</div>
+                            <a class="portal-link" href="Doctut/Pathology.html"><span>Pathology</span><span>→</span></a>
+                            <a class="portal-link" href="Doctut/Pharmacology.html"><span>Pharmacology</span><span>→</span></a>
+                            <a class="portal-link" href="Doctut/Microbiology.html"><span>Microbiology</span><span>→</span></a>
+                        </div>
+                    </div>
+                    <a class="portal-button" href="Doctut/MBBS Professional Exams (1st - 3rd Year) Q-Bank.html">
+                        MBBS Professional Exams Q-Bank →
+                    </a>
+                </div>
+            </section>
+            <section class="portal-card">
+                <h2 class="portal-title">Cerebellum</h2>
+                <p class="portal-subtitle">RR + Tests by Year with Cerebellum GT</p>
+                <div class="portal-links">
+                    <div class="year-block">
+                        <h3 class="year-title">1st Year</h3>
+                        <div class="year-sections">
+                            <div class="year-section-label">RR</div>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Anatomy.html"><span>Anatomy (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Physiology.html"><span>Physiology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Biochemistry.html"><span>Biochemistry (RR)</span><span>→</span></a>
+                            <div class="year-section-label">Tests</div>
+                            <a class="portal-link" href="cerebellum/test/CEREB Anatomy.html"><span>Anatomy (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Physiology.html"><span>Physiology (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Biochemistry.html"><span>Biochemistry (Tests)</span><span>→</span></a>
+                        </div>
+                    </div>
+
+                    <div class="year-block">
+                        <h3 class="year-title">2nd Year</h3>
+                        <div class="year-sections">
+                            <div class="year-section-label">RR</div>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Pathology.html"><span>Pathology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Pharmacology.html"><span>Pharmacology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Microbiology.html"><span>Microbiology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Forensic_Medicine.html"><span>Forensic Medicine (RR)</span><span>→</span></a>
+                            <div class="year-section-label">Tests</div>
+                            <a class="portal-link" href="cerebellum/test/CEREB Pathology.html"><span>Pathology (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Pharmacology.html"><span>Pharmacology (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Microbiology.html"><span>Microbiology (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Forensic_Medicine.html"><span>Forensic Medicine (Tests)</span><span>→</span></a>
+                        </div>
+                    </div>
+
+                    <div class="year-block">
+                        <h3 class="year-title">3rd Year</h3>
+                        <div class="year-sections">
+                            <div class="year-section-label">RR</div>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Preventive_&amp;_Social_Medicine.html"><span>PSM (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_ENT.html"><span>ENT (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Ophthalmology.html"><span>Ophthalmology (RR)</span><span>→</span></a>
+                            <div class="year-section-label">Tests</div>
+                            <a class="portal-link" href="cerebellum/test/CEREB Preventive_&amp;_Social_Medicine.html"><span>PSM (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB ENT.html"><span>ENT (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Ophthalmology.html"><span>Ophthalmology (Tests)</span><span>→</span></a>
+                        </div>
+                    </div>
+
+                    <div class="year-block">
+                        <h3 class="year-title">4th Year</h3>
+                        <div class="year-sections">
+                            <div class="year-section-label">RR</div>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Medicine.html"><span>Medicine (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Surgery.html"><span>Surgery (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Obstetrics_&amp;_Gynecology.html"><span>Obs &amp; Gynae (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Pediatrics.html"><span>Pediatrics (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Orthopedics.html"><span>Orthopedics (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Psychiatry.html"><span>Psychiatry (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Dermatology.html"><span>Dermatology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Radiology.html"><span>Radiology (RR)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/RR/CEREB_Anesthesia.html"><span>Anesthesia (RR)</span><span>→</span></a>
+                            <div class="year-section-label">Tests</div>
+                            <a class="portal-link" href="cerebellum/test/CEREB Medicine.html"><span>Medicine (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Surgery.html"><span>Surgery (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Obstetrics_&amp;_Gynecology.html"><span>Obs &amp; Gynae (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Pediatrics.html"><span>Pediatrics (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Orthopedics.html"><span>Orthopedics (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Psychiatry.html"><span>Psychiatry (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Dermatology.html"><span>Dermatology (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Radiology.html"><span>Radiology (Tests)</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/test/CEREB Anesthesia.html"><span>Anesthesia (Tests)</span><span>→</span></a>
+                        </div>
+                    </div>
+
+                    <div class="year-block">
+                        <h3 class="year-title">Cerebellum GT</h3>
+                        <div class="year-sections">
+                            <a class="portal-link" href="cerebellum/GT/CEREB Grand_Tests.html"><span>Grand Tests</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/GT/CEREB BTR.html"><span>BTR</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/GT/CEREB BTR's.html"><span>BTR's</span><span>→</span></a>
+                            <a class="portal-link" href="cerebellum/GT/CEREB Champion's_Batch.html"><span>Champion's Batch</span><span>→</span></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="portal-card">
+                <h2 class="portal-title">Marrow</h2>
+                <p class="portal-subtitle">2nd Year (Edition 8 Q-Banks)</p>
+                <div class="portal-links">
+                    <a class="portal-link" href="#" aria-disabled="true">
+                        <span>Pathology ED 8 Q-Bank (Coming Soon)</span>
+                        <span>→</span>
+                    </a>
+                    <a class="portal-link" href="#" aria-disabled="true">
+                        <span>Microbiology ED 8 Q-Bank (Coming Soon)</span>
+                        <span>→</span>
+                    </a>
+                    <a class="portal-link" href="#" aria-disabled="true">
+                        <span>Pharmacology ED 8 Q-Bank (Coming Soon)</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </section>
+        </div>
     </div>
+    <script>
+        const welcomeText = document.getElementById('welcomeText');
+        const logoutButton = document.getElementById('logoutButton');
+        const username = localStorage.getItem('techpagluUser');
 
-    <div id="status" role="status" aria-live="polite"></div>
-  </main>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDBtlw3vawzgciFlMJBsmMJcYIA_KT5QKU",
-      authDomain: "techpaglu-e5a1d.firebaseapp.com",
-      projectId: "techpaglu-e5a1d",
-      storageBucket: "techpaglu-e5a1d.firebasestorage.app",
-      messagingSenderId: "932355291634",
-      appId: "1:932355291634:web:4f703b9ec01087f877d36b"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const progressRef = doc(db, "data", "personalProgress");
-
-    const progressText = document.getElementById("progressText");
-    const saveButton = document.getElementById("saveButton");
-    const loadButton = document.getElementById("loadButton");
-    const status = document.getElementById("status");
-
-    function setStatus(message, type = "") {
-      status.textContent = message;
-      status.className = type;
-    }
-
-    async function saveProgress() {
-      setStatus("Saving...");
-
-      try {
-        await setDoc(progressRef, {
-          progress: progressText.value,
-          updatedAt: new Date().toISOString()
-        });
-
-        setStatus("Saved successfully!", "success");
-      } catch (error) {
-        console.error("Error saving progress:", error);
-        setStatus("Unable to save progress. Check the console for details.", "error");
-      }
-    }
-
-    async function loadProgress() {
-      setStatus("Loading progress...");
-
-      try {
-        const snapshot = await getDoc(progressRef);
-
-        if (snapshot.exists()) {
-          progressText.value = snapshot.data().progress || "";
-          setStatus("Progress loaded successfully!", "success");
-        } else {
-          setStatus("No saved progress found yet.");
+        if (username && welcomeText) {
+            welcomeText.textContent = `Welcome back, ${username}!`;
         }
-      } catch (error) {
-        console.error("Error loading progress:", error);
-        setStatus("Unable to load progress. Check the console for details.", "error");
-      }
-    }
 
-    saveButton.addEventListener("click", saveProgress);
-    loadButton.addEventListener("click", loadProgress);
-    window.addEventListener("DOMContentLoaded", loadProgress);
-  </script>
+        if (logoutButton) {
+            logoutButton.addEventListener('click', () => {
+                localStorage.removeItem('techpagluUser');
+                window.location.href = 'login.html';
+            });
+        }
+
+        localStorage.setItem('techpagluLastVisited', 'index.html');
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').catch((error) => {
+                    console.warn('Service worker registration failed:', error);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
