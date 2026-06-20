@@ -156,6 +156,50 @@
             box-shadow: 0 8px 18px rgba(102, 126, 234, 0.25);
         }
 
+        /* Progress Summary Section */
+        .progress-summary {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .progress-summary h3 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         .portal-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -283,6 +327,17 @@
             letter-spacing: 0.4px;
             margin-top: 4px;
         }
+
+        /* Progress badge */
+        .progress-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
@@ -293,6 +348,30 @@
             <div class="welcome-text" id="welcomeText">Welcome back!</div>
             <button class="logout-button" type="button" id="logoutButton">Log out</button>
         </div>
+
+        <!-- Progress Summary Section -->
+        <div class="progress-summary" id="progressSummary" style="display: none;">
+            <h3>📊 Your Progress</h3>
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <div class="stat-label">Tests Completed</div>
+                    <div class="stat-value" id="testsCompleted">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Average Score</div>
+                    <div class="stat-value" id="averageScore">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Best Score</div>
+                    <div class="stat-value" id="bestScore">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Time Spent</div>
+                    <div class="stat-value" id="totalTime">0h</div>
+                </div>
+            </div>
+        </div>
+
         <div class="portal-grid">
             <section class="portal-card">
                 <h2 class="portal-title">Prepladder</h2>
@@ -506,7 +585,25 @@
             </section>
         </div>
     </div>
-    <script>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDBtlw3vawzgciFlMJBsmMJcYIA_KT5QKU",
+            authDomain: "techpaglu-e5a1d.firebaseapp.com",
+            projectId: "techpaglu-e5a1d",
+            storageBucket: "techpaglu-e5a1d.firebasestorage.app",
+            messagingSenderId: "932355291634",
+            appId: "1:932355291634:web:4f703b9ec01087f877d36b"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         const welcomeText = document.getElementById('welcomeText');
         const logoutButton = document.getElementById('logoutButton');
         const username = localStorage.getItem('techpagluUser');
@@ -523,6 +620,92 @@
         }
 
         localStorage.setItem('techpagluLastVisited', 'index.html');
+
+        // ===== PROGRESS TRACKING SYSTEM =====
+        // Function to load user progress from Firestore
+        async function loadUserProgress() {
+            try {
+                const userDocRef = doc(db, 'users', username, 'progress', 'quizScores');
+                const docSnap = await getDoc(userDocRef);
+
+                if (docSnap.exists()) {
+                    const progressData = docSnap.data();
+                    displayProgressSummary(progressData);
+                }
+            } catch (error) {
+                console.error('Error loading progress:', error);
+            }
+        }
+
+        // Display progress summary on homepage
+        function displayProgressSummary(progressData) {
+            const progressSummary = document.getElementById('progressSummary');
+            const testsCompleted = document.getElementById('testsCompleted');
+            const averageScore = document.getElementById('averageScore');
+            const bestScore = document.getElementById('bestScore');
+            const totalTime = document.getElementById('totalTime');
+
+            if (progressData.tests && progressData.tests.length > 0) {
+                const tests = progressData.tests;
+                const scores = tests.map(t => t.score || 0);
+                const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+                const maxScore = Math.max(...scores);
+                const totalMinutes = tests.reduce((sum, t) => sum + (t.timeSpent || 0), 0);
+                const hours = Math.floor(totalMinutes / 60);
+
+                testsCompleted.textContent = tests.length;
+                averageScore.textContent = avgScore + '%';
+                bestScore.textContent = maxScore + '%';
+                totalTime.textContent = hours + 'h';
+
+                progressSummary.style.display = 'block';
+            }
+        }
+
+        // Global function to save quiz progress (will be called from MCQ pages)
+        window.saveQuizProgress = async function(quizName, score, totalQuestions, timeSpent) {
+            try {
+                const userDocRef = doc(db, 'users', username, 'progress', 'quizScores');
+                const docSnap = await getDoc(userDocRef);
+                
+                let progressData = docSnap.exists() ? docSnap.data() : { tests: [] };
+                
+                // Add or update test score
+                const existingTestIndex = progressData.tests.findIndex(t => t.name === quizName);
+                const testEntry = {
+                    name: quizName,
+                    score: score,
+                    totalQuestions: totalQuestions,
+                    timeSpent: timeSpent,
+                    completedAt: new Date().toISOString()
+                };
+
+                if (existingTestIndex >= 0) {
+                    progressData.tests[existingTestIndex] = testEntry;
+                } else {
+                    progressData.tests.push(testEntry);
+                }
+
+                await setDoc(userDocRef, progressData);
+                console.log('Progress saved successfully');
+            } catch (error) {
+                console.error('Error saving progress:', error);
+            }
+        };
+
+        // Auto-save before leaving the page
+        window.addEventListener('beforeunload', async (e) => {
+            // This event fires when user is about to leave the page
+            // The actual saving would be handled by individual quiz pages
+            if (localStorage.getItem('pendingProgress')) {
+                const pending = JSON.parse(localStorage.getItem('pendingProgress'));
+                await window.saveQuizProgress(pending.quizName, pending.score, pending.totalQuestions, pending.timeSpent);
+                localStorage.removeItem('pendingProgress');
+            }
+        });
+
+        // Load progress on page load
+        loadUserProgress();
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
